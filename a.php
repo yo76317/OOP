@@ -1,20 +1,15 @@
 <?php
-
-//條件
 class DB{
-    protected $table='';
+    protected $table;
     protected $dsn="mysql:host=localhost;charset=utf8;dbname=member";
     protected $pdo;
 
-    //構成
-    // $db=new DB ('users');
     public function __construct($table){
-        // 把pdo帶進來
         $this->pdo=new PDO($this->dsn,'root','');
         $this->table=$table;
     }
 
-    //拿到所有資料
+
     public function all(...$arg){
         $sql="SELECT * FROM $this->table ";
 
@@ -58,13 +53,12 @@ class DB{
         
             //fetchAll()加上常數參數FETCH_ASSOC是為了讓取回的資料陣列中
             //只有欄位名稱,而沒有數字的索引值
-            //echo $sql;
+        //    echo $sql;
             return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
-}
 
-     //只取一筆
-     public function find($id){
+    //只取一筆
+    public function find($id){
         $sql="SELECT * FROM $this->table WHERE ";
         if(is_array($id)){
 
@@ -82,41 +76,42 @@ class DB{
 
         }
 
-        //echo $sql;
+        // echo $sql;
+
         return $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
     }
 
+    //計算某個欄位或是計算符合條件的筆數
 
-    // 計算某個欄位或計算符合條件的比數
- 
-    // 新增或更新資料
- 
-    // 刪除資料
- 
-    // 萬用查詢
 
-class Journal extends DB{
-    protected $table='member';
-    public function __construct(){
-        parent::__construct($this->table);
-    }
+    //新增或更新資料
+
+
+    //刪除資料
+
+
+    //萬用的查詢
+
+
+
+
 }
 
 
-$Journal=new DB('journal');
+
+$member=new DB('member');
 echo "<pre>";
-print_r($Journal->find(['address'=>'台中']));
+print_r($member->find(['address'=>'台中']));
 echo "</pre>"; 
 echo "<pre>";
-print_r($Journal->all(['address'=>'台北']));
+print_r($member->all(['address'=>'台北']));
 echo "</pre>"; 
 
-
-// $db=new DB ('member');
-// echo "<pre>";
-//print_r($db->all(['item'=>'早餐']," ORDER by `money` desc"));
-// echo "</pre>";
-// echo "<pre>";
-// print_r($db->all());
-// echo "</pre>";
+/* $db=new DB('journal');
+echo "<pre>";
+print_r($db->all(['item'=>'早餐']," ORDER by `money` desc"));
+echo "</pre>";
+echo "<pre>";
+print_r($db->all());
+echo "</pre>"; */
 ?>

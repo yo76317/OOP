@@ -14,8 +14,6 @@ class DB{
     // 取全部,使用all
     public function all(...$arg){
         $sql="SELECT * FROM $this->table ";
-
-        
         // 依參數數量來決定進行的動作因此使用switch...case
         switch(count($arg)){
             case 1:
@@ -64,8 +62,9 @@ class DB{
         return $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
     }
 
+
     // 計算某個欄位或是計算符合條件的筆數
-     //max,min,sum,count,avg
+     // max,min,sum,count,avg
      public function math($math,$col,...$arg){
         $sql="SELECT $math($col) FROM $this->table ";
 
@@ -141,8 +140,9 @@ class DB{
             return $this->pdo->query($sql)->fetchColumn(0);
     }
  
-    // 新增或更新資料,一次限一筆資料
-    // 陣列裡面有沒有ID來處理
+
+    // 更新資料,一次限一筆資料
+     // 陣列裡面有沒有ID來處理
     public function save($array){
         if(isset($array['id'])){
             //update
@@ -158,11 +158,24 @@ class DB{
             //UPDATE $this->table SET col1=value1,col2=value2.....where id=? && col1=value1
         }else{
             //insert
+            //['col1'=>'value1','col3'=>'value3','col2'=>'value2',];
+
+            /* $keys=array_keys($array);
+            
+            $cols=implode("`,`",array_keys($array));
+            $values=implode("','",$array); */
+
+            $sql="INSERT INTO $this->table (`".implode("`,`",array_keys($array))."`) 
+                                     VALUES('".implode("','",$array)."')";
+
+            //INSERT INTO $this->table(`col1`,`col2,`col3`.....) VALUES('value1','value2','value3'.....)
         }
         echo $sql;
+        // return 新增才會一直新增不只會一筆而已
         return $this->pdo->exec($sql);
     }
  
+
     // 刪除資料
     public function del($id){
         $sql="DELETE FROM $this->table WHERE ";
@@ -181,15 +194,13 @@ class DB{
         return $this->pdo->exec($sql);
     }
  
+
     // 萬用的查詢
     public function q($sql){
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
-
-    
-}
+} // db end
 
 
 // 表單
@@ -232,10 +243,13 @@ echo "<pre>";
 print_r ($member->q("select * from `member` where `address`='台北' && `mobile` > 30"));
 echo "</pre>"; 
 
-echo "<h4>新增或更新資料,一次限一筆資料</h4>";
+echo "<h4>更新或新增資料,一次限一筆資料</h4>";
 echo "<p>更新後回傳更新筆數、出現0可能是數據一樣</p>";
 echo "<pre>";
 print_r($member->save(['id'=>12,'name'=>'陳佑青','address'=>'台北','mobile'=>'100']));
+print_r($member->save(['name'=>'陳佑青07',
+                        'address'=>'台北',
+                        'mobile'=>'70',]));
 echo "</pre>"; 
 
 

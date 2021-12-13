@@ -145,9 +145,30 @@ class DB{
  
  
     // 刪除資料
- 
+    public function del($id){
+        $sql="DELETE FROM $this->table WHERE ";
+        if(is_array($id)){
+            foreach($id as $key => $value){
+                $tmp[]="`$key`='$value'";
+            }
+            $sql .= implode(' AND ',$tmp);
+        }else{
+            $sql .= " id='$id'";
+        }
+        // 刪除不用回傳資料回來，所以用EXEC，但會回傳筆數
+        // return $this->pdo->exec($sql); 
+        //echo $sql;
+        return $this->pdo->exec($sql);
+    }
  
     // 萬用的查詢
+    public function q($sql){
+        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+
+    
 }
 
 
@@ -156,27 +177,39 @@ $member=new DB('member');
 
 echo "<h4>只取一筆find</h4>";
 echo "<pre>";
-print_r($member->find(['address'=>'高雄']));
+print_r ($member->find(['address'=>'高雄']));
 echo "</pre>"; 
 
 echo "<h4>取全部all</h4>";
 echo "<pre>";
-print_r($member->all(['address'=>'台北']));
+print_r ($member->all(['address'=>'台北']));
 echo "</pre>"; 
 
 echo "<h4>台北的加起來</h4>";
 echo "<pre>";
-print_r($member->math('sum','mobile',['address'=>'台北']));
+print_r ($member->math('sum','mobile',['address'=>'台北']));
 echo "</pre>"; 
 
 echo "<h4>台北的最小值</h4>";
 echo "<pre>";
-print_r($member->math('min','mobile',['address'=>'台北']));
+print_r ($member->math('min','mobile',['address'=>'台北']));
 echo "</pre>"; 
 
 echo "<h4>台北的筆數</h4>";
 echo "<pre>";
-print_r($member->math('count','*',['address'=>'台北']));
+print_r ($member->math('count','*',['address'=>'台北']));
+echo "</pre>"; 
+
+echo "<h4>刪除單筆資料</h4>";
+echo "<p>刪除後回傳刪除筆數、出現0可能是已刪除指定欄位或是資料表打錯</p>";
+echo "<pre>";
+print_r($member->del(10));
+echo "</pre>"; 
+
+echo "<h4>查詢指定條件</h4>";
+echo "<p>台北 和 mobile>30↑</p>";
+echo "<pre>";
+print_r ($member->q("select * from `member` where `address`='台北' && `mobile` > 30"));
 echo "</pre>"; 
 
 

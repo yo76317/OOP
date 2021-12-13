@@ -141,14 +141,34 @@ class DB{
             return $this->pdo->query($sql)->fetchColumn(0);
     }
  
-    // 新增或更新資料
- 
+    // 新增或更新資料,一次限一筆資料
+    // 陣列裡面有沒有ID來處理
+    public function save($array){
+        if(isset($array['id'])){
+            //update
+            foreach($array as $key => $value){
+                //sprint_f("`%s`='%s'",$key,$value)
+                // if($key!='id'){   
+                // ↑這一句是用來不讓前面搜id時被更新一次
+                    $tmp[]="`$key`='$value'";
+                // }
+            }
+            $sql="UPDATE $this->table SET ".implode(" , ",$tmp);
+            $sql .= " WHERE `id`='{$array['id']}'";
+            //UPDATE $this->table SET col1=value1,col2=value2.....where id=? && col1=value1
+        }else{
+            //insert
+        }
+        echo $sql;
+        return $this->pdo->exec($sql);
+    }
  
     // 刪除資料
     public function del($id){
         $sql="DELETE FROM $this->table WHERE ";
         if(is_array($id)){
             foreach($id as $key => $value){
+                // 加一個判斷式 if($key!="id") 讓id不被更新
                 $tmp[]="`$key`='$value'";
             }
             $sql .= implode(' AND ',$tmp);
@@ -210,6 +230,12 @@ echo "<h4>查詢指定條件</h4>";
 echo "<p>台北 和 mobile>30↑</p>";
 echo "<pre>";
 print_r ($member->q("select * from `member` where `address`='台北' && `mobile` > 30"));
+echo "</pre>"; 
+
+echo "<h4>新增或更新資料,一次限一筆資料</h4>";
+echo "<p>更新後回傳更新筆數、出現0可能是數據一樣</p>";
+echo "<pre>";
+print_r($member->save(['id'=>12,'name'=>'陳佑青','address'=>'台北','mobile'=>'100']));
 echo "</pre>"; 
 
 
